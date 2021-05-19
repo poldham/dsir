@@ -2,12 +2,16 @@ Package: dsir
 Type: Package
 Title: Search for Country Information at GenBank and NCBI
 Version: 0.0.1
-Author: Paul Oldham
-Maintainer: Paul Oldham <poldham@oneworldanalytics.com>
-Description: Search for and retrieve summary data on sequences originating from a country in GenBank and NCBI packahes
+Authors@R: person("Paul", "Oldham", email = "poldham@oneworldanalytics.com", role = c("aut", "cre"), comment = c(ORCID="0000-0002-1013-4390"))
+Description: Search for and retrieve summary data on sequences originating from a country in GenBank and NCBI packages. Based on the rentrez package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
 URL: https://github.com/poldham/dsir
 BugReports: https://github.com/poldham/dsir/issues
+Imports: 
+    magrittr
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

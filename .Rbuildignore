@@ -2,3 +2,8 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^CODE_OF_CONDUCT\.md$
+^ignore
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^README\.Rmd$

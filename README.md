@@ -6,6 +6,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+### Status: Experimental testing only
+
 The `dsir` package provides an easy way for researchers and governments
 to obtain country data on digital sequence information (genetic sequence
 data) submitted to [NCBI
@@ -64,12 +66,14 @@ R users will want to engage with the rich function set provided by the
 
 ## Installation
 
-If you have arrived here and your are completely new to the R
-programming language, do not fear. You need to start by installing R and
-RStudio on your computer following the instructions in Garrett
-Grolemund’s excellent and free [Hands On Programming with
-R](https://rstudio-education.github.io/hopr/). Follow the instructions
-[here](https://rstudio-education.github.io/hopr/starting.html)
+If you have arrived here and you are completely new to the R programming
+language, do not fear. You need to start by installing R and RStudio on
+your computer following the instructions in Garrett Grolemund’s
+excellent and free [Hands On Programming with
+R](https://rstudio-education.github.io/hopr/). Follow Garret’s
+instructions
+[here](https://rstudio-education.github.io/hopr/starting.html) and when
+you have time read the rest of the book.
 
 `dsir` is not on CRAN and can be installed from
 [GitHub](https://github.com/) with:
@@ -199,8 +203,10 @@ To search and obtain country data we follow a four step process:
 We want to start by obtaining a count because even though we are working
 with summary records the data gets big… fast. For example, the summary
 records for 2.4 million summary records for South Africa take up 45Gb.
-So, let’s not blow up the laptop by accident. We use `dsi_count()` for
-this. Note that the default database for all functions is ‘nuccore’.
+So, let’s not blow up the laptop by accident.
+
+We use `dsi_count()` to generate counts. Note that the default database
+for all functions is ‘nuccore’.
 
 ``` r
 library(dsir)
@@ -228,3 +234,71 @@ up to the total.
 (southafrica_homo + southafrica_not) == south_africa
 #> [1] TRUE
 ```
+
+Now that we are happy that the counts are working out we can generate
+other types of count. For example, to avoid dealing with a very large
+dataset we might want to filter the data by publication date (or
+optionally record modification date).
+
+We can do this by specifying a range of dates in this case for the first
+few months until 2021.
+
+``` r
+south_africa_range <- dsi_count(country = "(South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])", db = "nuccore")
+#> ℹ there are 36729 records in the 'nuccore' database for '(South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])'
+```
+
+When you have registered with NCBI and using an access token the
+underlying `rentrez` package will take care of any rate limiting when
+retrieving results. We now turn to retrieving the results.
+
+### Retrieving results
+
+To retrieve the raw results we use the `dsi_country()` function. In
+contrast with `dsi_count()` the `dsi_country` function will retrieve all
+of the results by default. As that can take a number of hours it is good
+practice to always use `dsi_count()` first.
+
+``` r
+za_sample <- dsi_country(country = "(South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])", db = "nuccore")
+```
+
+In the background the function is making repeated calls to the Entrez
+API and requesting 10,000 records per time (the maximum). Note that this
+maximum may vary depending on the NCBI database and it is a good idea to
+read the [rentrez
+tutorial](https://cran.r-project.org/web/packages/rentrez/vignettes/rentrez_tutorial.html)
+on the web history if you want to navigate through these issues.
+
+When the search has finished we will have a za\_sample in the
+environment (in this case it takes a few minutes).
+
+The object that comes back is a list that contains chunks of 10,000
+records (up to the 36,729 above). These records are in XML format and
+need to be parsed to a table.
+
+### Parsing the Results
+
+To parse the results we use `dsi_parse()`. This will iterate over each
+of the list objects and convert the data to a data.frame that we can
+save. Note that this can take some time to do. If we simply call
+dsi\_parse the result will be another list (this time of data.frames) so
+we use `map_df()` from `purrr` (part of the tidyverse) to bind them all
+together. If you don’t have the tidyverse then use
+`install.packages(tidyverse)` to get it.
+
+One ppint to note about the parsing of the esummary data is that the
+existing function does not parse the statistics table inside the
+summary. The reason for this is that basic statistics such as the
+sequence length are already included and the stats table does not in
+reality add much to this. If you want to inspect the stats data to
+confirm this open up the list object returned above to assess it.
+
+``` r
+library(purrr)
+za_results <- map_df(za_sample, dsi_parse)
+```
+
+As we iterate over the list messages will start to appear. These relate
+to warnings that will automatically be generated with notes to
+`Expect warnings`

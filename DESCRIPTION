@@ -8,10 +8,18 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
+Roxygen: list(markdown = TRUE)
 URL: https://github.com/poldham/dsir
 BugReports: https://github.com/poldham/dsir/issues
 Imports: 
-    magrittr
+    magrittr,
+    dplyr,
+    purrr,
+    rentrez,
+    tibble,
+    tidyr,
+    usethis
 Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+    testthat (>= 3.0.0),
+Depends: 
+    R (>= 2.10)

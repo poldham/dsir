@@ -2,9 +2,7 @@
 % Please edit documentation in R/dsi_parse.R
 \name{dsi_parse}
 \alias{dsi_parse}
-\title{Parse the Esummary from rentrez_country to a data frame
-Function to parse the results of a call to rentrez_fetch to a data frame. Note that does not presently include the statistics
-Tested on 10,0000 records for the Bahamas}
+\title{Parse the Esummary from rentrez_country to a data frame}
 \usage{
 dsi_parse(x)
 }
@@ -15,28 +13,17 @@ dsi_parse(x)
 data frame
 }
 \description{
-Parse the Esummary from rentrez_country to a data frame
 Function to parse the results of a call to rentrez_fetch to a data frame. Note that does not presently include the statistics
 Tested on 10,0000 records for the Bahamas
 }
 \details{
-This function returns all available esummary meta data except the statistics chunk (as this partly repeats infornation such as sequence length)
+This function returns all available esummary meta data except the statistics chunk (as this partly repeats information such as sequence length)
 }
 \examples{
 \dontrun{
-
-# with a single result set
-
-bs_nucleotide <- entrez_search(db = "nucleotide",
-term = "Bahamas", use_history = TRUE), then
-bs_summary <- entrez_summary(db="nucleotide", web_history = bs_nucleotide$web_history,
-retmode="xml", retmax=10000, retstart=seq_start) then
-bs_results <- dsi_parse(bs_summary)
-
-# With multiple list objects
-
-bahamas_country <- dsi_country(country = "bahamas", dbase = "nucleotide")
-bahamas_sequences <- map_df(bahamas_sequences, dsi_parse)
-
+# get the data
+bahamas_country <- dsi_country(country = "bahamas", dbase = "nuccore")
+# map it to a data frame
+bahamas_sequences <- map_df(bahamas_country, dsi_parse)
 }
 }

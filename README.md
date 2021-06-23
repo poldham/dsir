@@ -103,9 +103,10 @@ your name in the top right corner to access your account details. There
 you will see a panel called `API Key Management`. Generate an API key
 and copy it.
 
-The recommended way to store the key is in your R environment with the
-`usethis` package. As `dsir` is built on `rentrez` we should also
-install it at the same time
+One way to store the key is in your R environment with the `usethis`
+package (for a greater degree of security use the credentials package).
+As `dsir` is built on `rentrez` we should also install it at the same
+time.
 
 ``` r
 install.packages("usethis")
@@ -137,18 +138,19 @@ To understand the databases that are accessible we can use `rentrez`.
 ``` r
 library(rentrez)
 entrez_dbs()
-#>  [1] "pubmed"          "protein"         "nuccore"         "ipg"            
-#>  [5] "nucleotide"      "structure"       "genome"          "annotinfo"      
-#>  [9] "assembly"        "bioproject"      "biosample"       "blastdbinfo"    
-#> [13] "books"           "cdd"             "clinvar"         "gap"            
-#> [17] "gapplus"         "grasp"           "dbvar"           "gene"           
-#> [21] "gds"             "geoprofiles"     "homologene"      "medgen"         
-#> [25] "mesh"            "ncbisearch"      "nlmcatalog"      "omim"           
-#> [29] "orgtrack"        "pmc"             "popset"          "proteinclusters"
-#> [33] "pcassay"         "protfam"         "biosystems"      "pccompound"     
-#> [37] "pcsubstance"     "seqannot"        "snp"             "sra"            
-#> [41] "taxonomy"        "biocollections"  "gtr"
 ```
+
+    ##  [1] "pubmed"          "protein"         "nuccore"         "ipg"            
+    ##  [5] "nucleotide"      "structure"       "genome"          "annotinfo"      
+    ##  [9] "assembly"        "bioproject"      "biosample"       "blastdbinfo"    
+    ## [13] "books"           "cdd"             "clinvar"         "gap"            
+    ## [17] "gapplus"         "grasp"           "dbvar"           "gene"           
+    ## [21] "gds"             "geoprofiles"     "homologene"      "medgen"         
+    ## [25] "mesh"            "ncbisearch"      "nlmcatalog"      "omim"           
+    ## [29] "orgtrack"        "pmc"             "popset"          "proteinclusters"
+    ## [33] "pcassay"         "protfam"         "biosystems"      "pccompound"     
+    ## [37] "pcsubstance"     "seqannot"        "snp"             "sra"            
+    ## [41] "taxonomy"        "biocollections"  "gtr"
 
 For those interested in GenBank (the best known of these databases) note
 that there is no entry for genbank. What we want here is the `nuccore`
@@ -163,21 +165,22 @@ linkages we use another `rentrez` function.
 ``` r
 library(rentrez)
 rentrez::entrez_db_links("nuccore")
-#> Databases with linked records for database 'nuccore'
-#>  [1] assembly        assembly        biocollections  bioproject     
-#>  [5] bioproject      bioproject      biosample       biosystems     
-#>  [9] ccds            clone           nuccore         dbvar          
-#> [13] gene            genome          genome          geoprofiles    
-#> [17] homologene      nuccore         nuccore         nuccore        
-#> [21] nuccore         nuccore         nuccore         nuccore        
-#> [25] nuccore         nuccore         nuccore         omim           
-#> [29] pccompound      pcsubstance     pmc             popset         
-#> [33] probe           protein         protein         protein        
-#> [37] protein         protein         protein         protein        
-#> [41] protein         proteinclusters pubmed          pubmed         
-#> [45] pubmed          snp             sparcle         sra            
-#> [49] sra             structure       taxonomy        trace
 ```
+
+    ## Databases with linked records for database 'nuccore'
+    ##  [1] assembly        assembly        biocollections  bioproject     
+    ##  [5] bioproject      bioproject      biosample       biosystems     
+    ##  [9] ccds            clone           nuccore         dbvar          
+    ## [13] gene            genome          genome          geoprofiles    
+    ## [17] homologene      nuccore         nuccore         nuccore        
+    ## [21] nuccore         nuccore         nuccore         nuccore        
+    ## [25] nuccore         nuccore         nuccore         omim           
+    ## [29] pccompound      pcsubstance     pmc             popset         
+    ## [33] probe           protein         protein         protein        
+    ## [37] protein         protein         protein         protein        
+    ## [41] protein         proteinclusters pubmed          pubmed         
+    ## [45] pubmed          snp             sparcle         sra            
+    ## [49] sra             structure       taxonomy        trace
 
 We won’t go into the detail of these linkages here except to highlight
 that once you have the data from one database you can then retrieve data
@@ -188,7 +191,8 @@ from other linked databases.
 Country names appear in NCBI data in two main forms:
 
 1.  In the country field (country tag)
-2.  In an organism description (e.g. for a strain or variety)
+2.  In an organism description (e.g. for a strain or variety) or other
+    part of a record
 
 We want to capture both of these bearing in mind that in a later step we
 will want to examine and filter out any noisy records.
@@ -211,8 +215,72 @@ for all functions is ‘nuccore’.
 ``` r
 library(dsir)
 south_africa <- dsi_count(country = "South Africa", db = "nuccore")
-#> ℹ there are 2409451 records in the 'nuccore' database for 'South Africa'
 ```
+
+    ## ℹ there are 2470233 records in the 'nuccore' database for 'South Africa'
+
+While we will mainly focus on the nucleotide database note that we can
+search all the other databases in the list. What we need to be careful
+about is that the reason a country appears in a record may be a
+reference to a submitting organisation rather than the origin of the
+material. So, view these counts as raw for exploration.
+
+``` r
+library(dsir)
+south_africa_proteins <- dsi_count(country = "South Africa", db = "protein")
+```
+
+    ## ℹ there are 8329247 records in the 'protein' database for 'South Africa'
+
+When conducting counts it is a good idea to have the NCBI database
+search open so that you can check and investigate a query. If you are
+running the query above it will appear at this url
+<https://www.ncbi.nlm.nih.gov/protein/?term=%22South+Africa%22>
+
+<img src="images/south_africa_protein.png" width="2961" />
+
+Notice in the top records we can see that our search term appears in the
+titles. If we open one of these records we can inspect the presence of
+the country name.
+
+<img src="images/southafrica_protein_detail.png" width="2953" /> In this
+case under FEATURES we can see that the country is referenced as South
+Africa (the source of the sample for the protein).
+
+As this suggests, we may want to start by capturing everything that
+mentions a country and then narrow the focus down to the sample name. To
+do that we can use the country qualifier.
+
+NCBI databases allow for the use of a set of fields to limit searches in
+various ways. You can find the table of fields
+[here](https://www.ncbi.nlm.nih.gov/books/NBK49540/table/Sequences_help_appe.T.fields_available_f/?report=objectonly).
+The country name appears in the list of features and we might imagine
+that we could use a feature key in the same way as for organism or
+isolate, except that we can’t. The country field is linked to a table of
+country names that you will find [here](http://www.insdc.org/country).
+
+To use the country qualifier we can start with an open wildcard search
+as in the manual [here](http://www.insdc.org/country).
+
+``` r
+dsi_count(country = "/country=*", db = "nuccore")
+```
+
+    ## ℹ there are 86029440 records in the 'nuccore' database for '/country=*'
+
+This tells us or perhaps better… suggests… that there are 85 million
+accessions (not sequences) that have an entry in the country field. We
+can then construct a count that is restricted to the country qualifier
+field.
+
+``` r
+southafrica_qual <- dsi_count(country = "country=South Africa", db = "nuccore")
+```
+
+    ## ℹ there are 2139844 records in the 'nuccore' database for 'country=South Africa'
+
+As we would expect, this count is lower than for the general search for
+South Africa across the database.
 
 We can elaborate on this for other types of count. In international
 debates on genetic sequence data human genetic material is excluded.
@@ -222,45 +290,136 @@ many are non-human.
 ``` r
 library(dsir)
 southafrica_homo <- dsi_count(country = "(South Africa AND Homo sapiens[ORGN])", db = "nuccore")
-#> ℹ there are 20429 records in the 'nuccore' database for '(South Africa AND Homo sapiens[ORGN])'
-southafrica_not <- dsi_count(country = "(South Africa NOT Homo sapiens[ORGN])", db = "nuccore")
-#> ℹ there are 2389022 records in the 'nuccore' database for '(South Africa NOT Homo sapiens[ORGN])'
 ```
 
-We can figure out if these counts are correct by checking that they add
-up to the total.
+    ## ℹ there are 20429 records in the 'nuccore' database for '(South Africa AND Homo sapiens[ORGN])'
 
 ``` r
-(southafrica_homo + southafrica_not) == south_africa
-#> [1] TRUE
+southafrica_not <- dsi_count(country = "(South Africa NOT Homo sapiens[ORGN])", db = "nuccore")
 ```
 
-Now that we are happy that the counts are working out we can generate
-other types of count. For example, to avoid dealing with a very large
-dataset we might want to filter the data by publication date (or
-optionally record modification date).
+    ## ℹ there are 2449804 records in the 'nuccore' database for '(South Africa NOT Homo sapiens[ORGN])'
+
+If we wanted to restrict our search to the country qualifier we would
+use:
+
+``` r
+library(dsir)
+southafrica_homo <- dsi_count(country = "(country=South Africa AND Homo sapiens[ORGN])", db = "nuccore")
+```
+
+    ## ℹ there are 19140 records in the 'nuccore' database for '(country=South Africa AND Homo sapiens[ORGN])'
+
+``` r
+southafrica_not <- dsi_count(country = "(country=South Africa NOT Homo sapiens[ORGN])", db = "nuccore")
+```
+
+    ## ℹ there are 2120704 records in the 'nuccore' database for '(country=South Africa NOT Homo sapiens[ORGN])'
+
+We can also use wider filters described here to build up a picture of
+the holdings using the major categories of organisms used by NCBI as
+filters. We will also test out restricting the records for South Africa
+to those that are not Homo sapiens or humans. Here we want to check that
+use of a common name produces the same score as a taxonomic name.
+
+``` r
+dsi_count(country = "country = South Africa AND animals[Filter] ", db = "nuccore")
+```
+
+    ## ℹ there are 1136740 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] '
+
+``` r
+dsi_count(country = "country = South Africa AND animals[Filter] NOT Homo sapiens[ORGN])", db = "nuccore")
+```
+
+    ## ℹ there are 1117596 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] NOT Homo sapiens[ORGN])'
+
+``` r
+dsi_count(country = "country = South Africa AND animals[Filter] NOT humans[ORGN])", db = "nuccore")
+```
+
+    ## ℹ there are 1117596 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] NOT humans[ORGN])'
+
+``` r
+dsi_count(country = "country = South Africa AND plants[Filter] ", db = "nuccore")
+```
+
+    ## ℹ there are 34042 records in the 'nuccore' database for 'country = South Africa AND plants[Filter] '
+
+``` r
+dsi_count(country = "country = South Africa AND fungi[Filter] ", db = "nuccore")
+```
+
+    ## ℹ there are 111056 records in the 'nuccore' database for 'country = South Africa AND fungi[Filter] '
+
+``` r
+dsi_count(country = "country = South Africa AND protists[Filter] ", db = "nuccore")
+```
+
+    ## ℹ there are 42645 records in the 'nuccore' database for 'country = South Africa AND protists[Filter] '
+
+``` r
+dsi_count(country = "country = South Africa AND bacteria[Filter] ", db = "nuccore")
+```
+
+    ## ℹ there are 814853 records in the 'nuccore' database for 'country = South Africa AND bacteria[Filter] '
+
+``` r
+dsi_count(country = "country = South Africa AND archaea[Filter] ", db = "nuccore")
+```
+
+    ## ℹ there are 1248 records in the 'nuccore' database for 'country = South Africa AND archaea[Filter] '
+
+``` r
+dsi_count(country = "country = South Africa AND viruses[Filter] ", db = "nuccore")
+```
+
+    ## ℹ there are 75189 records in the 'nuccore' database for 'country = South Africa AND viruses[Filter] '
+
+We have now generated a range of country related searches and restricted
+them in various ways. If we are interested in monitoring activity over
+time we do not want to be repeatedly downloading the same records if we
+can avoid it. We would therefore want to restrict the records by date.
+For example we might download the 2 million plus records for South
+Africa and then want to get the latest month of data. An important
+caveat on monitoring sequence related activity is that we would
+periodically want to refresh the entire dataset to capture any changes
+that have been introduced since the original search.
 
 We can do this by specifying a range of dates in this case for the first
-few months until 2021.
+few months until 2021. We will do this as a general open search for
+South Africa and then restrict the data to the country qualifier. Note
+that the date format is YYYY/MM/DD and the separator between dates is
+the `:`.
 
 ``` r
 south_africa_range <- dsi_count(country = "(South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])", db = "nuccore")
-#> ℹ there are 36729 records in the 'nuccore' database for '(South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])'
 ```
 
-When you have registered with NCBI and using an access token the
-underlying `rentrez` package will take care of any rate limiting when
-retrieving results. We now turn to retrieving the results.
+    ## ℹ there are 37165 records in the 'nuccore' database for '(South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])'
+
+``` r
+south_africa_range2 <- dsi_count(country = "(country=South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])", db = "nuccore")
+```
+
+    ## ℹ there are 34466 records in the 'nuccore' database for '(country=South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])'
+
+We can of course think about automating these counts when we are happy
+that we have captured what needs to be captured.
 
 ### Retrieving results
 
 To retrieve the raw results we use the `dsi_country()` function. In
 contrast with `dsi_count()` the `dsi_country` function will retrieve all
 of the results by default. As that can take a number of hours it is good
-practice to always use `dsi_count()` first.
+practice to always use `dsi_count()` first. We will use the bahamas as
+our example as it returns the data in a few minutes.
+
+The underlying `rentrez` package takes care of any rate limiting for use
+of the API.
 
 ``` r
-za_sample <- dsi_country(country = "(South Africa) AND 2021/01/01:2021/05/19[PDAT] NOT Homo sapiens[ORGN])", db = "nuccore")
+bahamas_raw <- dsi_country(country = "Bahamas NOT Homo sapiens[ORGN])", db = "nuccore")
 ```
 
 In the background the function is making repeated calls to the Entrez
@@ -270,24 +429,24 @@ read the [rentrez
 tutorial](https://cran.r-project.org/web/packages/rentrez/vignettes/rentrez_tutorial.html)
 on the web history if you want to navigate through these issues.
 
-When the search has finished we will have a za\_sample in the
+When the search has finished we will have bahamas\_raw in the
 environment (in this case it takes a few minutes).
 
 The object that comes back is a list that contains chunks of 10,000
-records (up to the 36,729 above). These records are in XML format and
-need to be parsed to a table.
+records (around 33,000 records). These records are esummaries in XML
+format and need to be parsed to a table.
 
 ### Parsing the Results
 
 To parse the results we use `dsi_parse()`. This will iterate over each
 of the list objects and convert the data to a data.frame that we can
 save. Note that this can take some time to do. If we simply call
-dsi\_parse the result will be another list (this time of data.frames) so
-we use `map_df()` from `purrr` (part of the tidyverse) to bind them all
-together. If you don’t have the tidyverse then use
+`dsi_parse` the result will be another list (this time of data.frames)
+so we use `map_df()` from `purrr` (part of the tidyverse) to bind them
+all together. If you don’t have the tidyverse then use
 `install.packages(tidyverse)` to get it.
 
-One ppint to note about the parsing of the esummary data is that the
+One point to note about the parsing of the esummary data is that the
 existing function does not parse the statistics table inside the
 summary. The reason for this is that basic statistics such as the
 sequence length are already included and the stats table does not in
@@ -296,9 +455,79 @@ confirm this open up the list object returned above to assess it.
 
 ``` r
 library(purrr)
-za_results <- map_df(za_sample, dsi_parse)
+bahamas_df <- map_df(bahamas_raw, dsi_parse)
 ```
 
-As we iterate over the list messages will start to appear. These relate
-to warnings that will automatically be generated with notes to
-`Expect warnings`
+Some of the data we want is stored in concatenated fields under the
+subtype and subname columns. To parse this we need another function. You
+can do this separately, thus preserving the original data, or you can do
+it in one go. Keeping things separate can be useful where the data
+contains unexpected results… in some cases records may contain multiple
+entries that can be difficult to anticipate. Keeping the data separate
+can help you figure things out.
+
+``` r
+library(purrr)
+bahamas_results <- map_df(bahamas_raw, dsi_parse) %>%
+  dsi_type(., country = "Bahamas")
+```
+
+### Filtering country results
+
+If you have used am open search on a country name you will have some
+records where the country appears in the country field and others where
+it is elsewhere, such as in the title or in organism details.
+
+We can easily identify those where the country appears in the country
+field.
+
+``` r
+library(tidyverse)
+bahamas_results <- bahamas_results %>% 
+  mutate(country_entry = str_extract(subname, "Bahamas")) %>% 
+  tidyr::replace_na(list(country_entry = 0))
+```
+
+Now let’s take a look at the results where the Bahamas appeared in the
+country field and those records where it appeared elsewhere. Here we
+will just count them up.
+
+``` r
+bahamas_results %>% 
+  count(country_entry)
+```
+
+So, 4,850 of the records did not contain the Bahamas in the country
+field but did contain them elsewhere.
+
+``` r
+bahamas_results %>% 
+  filter(country_entry == 0) %>% 
+  View()
+```
+
+In the case of the first of these accessions, the word Bahamas appears
+in the title of a publication linked to a number of accessions as
+‘Review of the West Indian Astraptes xagua (Lucas) complex (Hesperiidae:
+Eudaminae) with the description of a new subspecies from the Bahamas’.
+The most likely candidates for other country entries are the title of
+the accession itself, the title of a publication linked with accessions
+or the species name or related details.
+
+<!--- ### Retrieving Publications
+
+
+```r
+library(rentrez)
+links <- entrez_db_links("nuccore")
+
+links
+```
+
+
+```r
+#pubmed_data <- entrez_link(dbfrom = "nuccore", id = bahamas_results$id[1], db = "pubmed", by_id = TRUE)
+#pubmed_data
+```
+ 
+--->

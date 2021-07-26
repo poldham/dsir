@@ -7,9 +7,9 @@ kenya_homo <- dsi_count(country = "(Kenya AND Homo sapiens[ORGN])", db = "nuccor
 kenya_not <- dsi_count(country = "(Kenya NOT Homo sapiens[ORGN])", db = "nuccore")
 
 test_that("dsi_counts tally", {
-  expect_true((kenya_homo + kenya_not) == kenya_all)
+  expect_true((kenya_homo$total + kenya_not$total) == kenya_all$total)
 })
 
 test_that("dsi_count with date works", {
-  expect_true((kenya_homo + kenya_not) == kenya_all)
+  expect_true((kenya_homo$total + kenya_not$total) == kenya_all$total)
 })

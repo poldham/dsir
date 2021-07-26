@@ -23,6 +23,7 @@
 #' @importFrom usethis ui_info
 #' @importFrom usethis ui_value
 #' @importFrom glue glue
+#' @importFrom dplyr mutate
 #' @examples \dontrun{bahamas <- dsi_count(country = "bahamas", db = "nuccore")
 #' dsi_count(country = "bahamas", db = "biosample")
 #' dsi_count(country = "bahamas", db = "bioproject")
@@ -55,7 +56,8 @@ dsi_count <- function(country = NULL, db = "nuccore") {
 
   ui_info('there are {ui_value(ccount)} records in the {ui_value(db)} database for {ui_value(country)}')
 
-  out <- tibble::tibble(country = glue({{country}}), total = glue({{ccount}}, db = glue({{db}})))
+  out <- tibble::tibble(country = glue({{country}}), total = glue({{ccount}}, db = glue({{db}}))) %>%
+    mutate(total = as.numeric(total))
 
 
   #invisible(ccount)

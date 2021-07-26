@@ -52,16 +52,20 @@ devtools::install_github("poldham/dsir")
 
 The NCBI API provides higher level access to data if you register with the system and obtain an API token (a unique key). You can use the functions without an API key but access is limited to three calls per second. 
 
-To register for an account with NCBI go [here](https://www.ncbi.nlm.nih.gov/account/register/?back_url=https%3A%2F%2Fwww.ncbi.nlm.nih.gov%2Fhome%2Fdevelop%2Fapi%2F&partners-uri=cms:/account/partners). Note that from June 2021 NCBI will move to third party logins (e.g. using Google, and institutional or government login), see [here](https://ncbiinsights.ncbi.nlm.nih.gov/2021/01/05/important-changes-ncbi-accounts-2021/) for more details. Depending on when you land on this page, follow the latest instructions. 
+To register for an account with NCBI go [here](https://www.ncbi.nlm.nih.gov/account/register/?back_url=https%3A%2F%2Fwww.ncbi.nlm.nih.gov%2Fhome%2Fdevelop%2Fapi%2F&partners-uri=cms:/account/partners). For NCBI users who registered prior to June 2021 note that you are now required to use a third party login (e.g. using Google, institutional or government login), see [here](https://ncbiinsights.ncbi.nlm.nih.gov/2021/01/05/important-changes-ncbi-accounts-2021/) for more details. In essence, login to your account and link your profile to a third party service (it is very easy).
 
-Inside your account profile you will be able to create an API. Go to your name in the top right corner to access your account details. There you will see a panel called `API Key Management`. Generate an API key and copy it.
+Inside your NCBI account profile you will need to create an API. Go to your name in the top right corner to access your account details. There you will see a panel called `API Key Management`. Generate an API key, copy it and store it somewhere safe.
 
-One way to store the key is in your R environment with the `usethis` package (for a greater degree of security use the credentials package). As `dsir` is built on `rentrez` we should also install it at the same time.
+There are multiple ways to store API keys using R Studio with varying degrees of security. One way to store the key is in your R environment with the `usethis` package (for a greater degree of security use the [credentials](https://docs.ropensci.org/credentials/) package). 
+
+As `dsir` is built on `rentrez` we should also install it at the same time.
 
 ```{r one, eval=FALSE}
 install.packages("usethis")
 install.packages("rentrez")
 ```
+
+Now run the following in the console.
 
 ```{r two, eval=FALSE}
 usethis::edit_r_environ()

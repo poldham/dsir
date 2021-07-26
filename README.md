@@ -92,19 +92,23 @@ second.
 
 To register for an account with NCBI go
 [here](https://www.ncbi.nlm.nih.gov/account/register/?back_url=https%3A%2F%2Fwww.ncbi.nlm.nih.gov%2Fhome%2Fdevelop%2Fapi%2F&partners-uri=cms:/account/partners).
-Note that from June 2021 NCBI will move to third party logins
-(e.g. using Google, and institutional or government login), see
+For NCBI users who registered prior to June 2021 note that you are now
+required to use a third party login (e.g. using Google, institutional or
+government login), see
 [here](https://ncbiinsights.ncbi.nlm.nih.gov/2021/01/05/important-changes-ncbi-accounts-2021/)
-for more details. Depending on when you land on this page, follow the
-latest instructions.
+for more details. In essence, login to your account and link your
+profile to a third party service (it is very easy).
 
-Inside your account profile you will be able to create an API. Go to
+Inside your NCBI account profile you will need to create an API. Go to
 your name in the top right corner to access your account details. There
-you will see a panel called `API Key Management`. Generate an API key
-and copy it.
+you will see a panel called `API Key Management`. Generate an API key,
+copy it and store it somewhere safe.
 
-One way to store the key is in your R environment with the `usethis`
-package (for a greater degree of security use the credentials package).
+There are multiple ways to store API keys using R Studio with varying
+degrees of security. One way to store the key is in your R environment
+with the `usethis` package (for a greater degree of security use the
+[credentials](https://docs.ropensci.org/credentials/) package).
+
 As `dsir` is built on `rentrez` we should also install it at the same
 time.
 
@@ -112,6 +116,8 @@ time.
 install.packages("usethis")
 install.packages("rentrez")
 ```
+
+Now run the following in the console.
 
 ``` r
 usethis::edit_r_environ()
@@ -217,7 +223,7 @@ library(dsir)
 south_africa <- dsi_count(country = "South Africa", db = "nuccore")
 ```
 
-    ## ℹ there are 2470233 records in the 'nuccore' database for 'South Africa'
+    ## ℹ there are 2478159 records in the 'nuccore' database for 'South Africa'
 
 While we will mainly focus on the nucleotide database note that we can
 search all the other databases in the list. What we need to be careful
@@ -230,7 +236,7 @@ library(dsir)
 south_africa_proteins <- dsi_count(country = "South Africa", db = "protein")
 ```
 
-    ## ℹ there are 8329247 records in the 'protein' database for 'South Africa'
+    ## ℹ there are 8338259 records in the 'protein' database for 'South Africa'
 
 When conducting counts it is a good idea to have the NCBI database
 search open so that you can check and investigate a query. If you are
@@ -266,7 +272,7 @@ as in the manual [here](http://www.insdc.org/country).
 dsi_count(country = "/country=*", db = "nuccore")
 ```
 
-    ## ℹ there are 86029440 records in the 'nuccore' database for '/country=*'
+    ## ℹ there are 87082979 records in the 'nuccore' database for '/country=*'
 
 This tells us or perhaps better… suggests… that there are 85 million
 accessions (not sequences) that have an entry in the country field. We
@@ -277,7 +283,7 @@ field.
 southafrica_qual <- dsi_count(country = "country=South Africa", db = "nuccore")
 ```
 
-    ## ℹ there are 2139844 records in the 'nuccore' database for 'country=South Africa'
+    ## ℹ there are 2146237 records in the 'nuccore' database for 'country=South Africa'
 
 As we would expect, this count is lower than for the general search for
 South Africa across the database.
@@ -292,13 +298,13 @@ library(dsir)
 southafrica_homo <- dsi_count(country = "(South Africa AND Homo sapiens[ORGN])", db = "nuccore")
 ```
 
-    ## ℹ there are 20429 records in the 'nuccore' database for '(South Africa AND Homo sapiens[ORGN])'
+    ## ℹ there are 20434 records in the 'nuccore' database for '(South Africa AND Homo sapiens[ORGN])'
 
 ``` r
 southafrica_not <- dsi_count(country = "(South Africa NOT Homo sapiens[ORGN])", db = "nuccore")
 ```
 
-    ## ℹ there are 2449804 records in the 'nuccore' database for '(South Africa NOT Homo sapiens[ORGN])'
+    ## ℹ there are 2457725 records in the 'nuccore' database for '(South Africa NOT Homo sapiens[ORGN])'
 
 If we wanted to restrict our search to the country qualifier we would
 use:
@@ -314,7 +320,7 @@ southafrica_homo <- dsi_count(country = "(country=South Africa AND Homo sapiens[
 southafrica_not <- dsi_count(country = "(country=South Africa NOT Homo sapiens[ORGN])", db = "nuccore")
 ```
 
-    ## ℹ there are 2120704 records in the 'nuccore' database for '(country=South Africa NOT Homo sapiens[ORGN])'
+    ## ℹ there are 2127097 records in the 'nuccore' database for '(country=South Africa NOT Homo sapiens[ORGN])'
 
 We can also use wider filters described here to build up a picture of
 the holdings using the major categories of organisms used by NCBI as
@@ -326,43 +332,43 @@ use of a common name produces the same score as a taxonomic name.
 dsi_count(country = "country = South Africa AND animals[Filter] ", db = "nuccore")
 ```
 
-    ## ℹ there are 1136740 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] '
+    ## ℹ there are 1137283 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] '
 
 ``` r
 dsi_count(country = "country = South Africa AND animals[Filter] NOT Homo sapiens[ORGN])", db = "nuccore")
 ```
 
-    ## ℹ there are 1117596 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] NOT Homo sapiens[ORGN])'
+    ## ℹ there are 1118139 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] NOT Homo sapiens[ORGN])'
 
 ``` r
 dsi_count(country = "country = South Africa AND animals[Filter] NOT humans[ORGN])", db = "nuccore")
 ```
 
-    ## ℹ there are 1117596 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] NOT humans[ORGN])'
+    ## ℹ there are 1118139 records in the 'nuccore' database for 'country = South Africa AND animals[Filter] NOT humans[ORGN])'
 
 ``` r
 dsi_count(country = "country = South Africa AND plants[Filter] ", db = "nuccore")
 ```
 
-    ## ℹ there are 34042 records in the 'nuccore' database for 'country = South Africa AND plants[Filter] '
+    ## ℹ there are 34126 records in the 'nuccore' database for 'country = South Africa AND plants[Filter] '
 
 ``` r
 dsi_count(country = "country = South Africa AND fungi[Filter] ", db = "nuccore")
 ```
 
-    ## ℹ there are 111056 records in the 'nuccore' database for 'country = South Africa AND fungi[Filter] '
+    ## ℹ there are 112471 records in the 'nuccore' database for 'country = South Africa AND fungi[Filter] '
 
 ``` r
 dsi_count(country = "country = South Africa AND protists[Filter] ", db = "nuccore")
 ```
 
-    ## ℹ there are 42645 records in the 'nuccore' database for 'country = South Africa AND protists[Filter] '
+    ## ℹ there are 42659 records in the 'nuccore' database for 'country = South Africa AND protists[Filter] '
 
 ``` r
 dsi_count(country = "country = South Africa AND bacteria[Filter] ", db = "nuccore")
 ```
 
-    ## ℹ there are 814853 records in the 'nuccore' database for 'country = South Africa AND bacteria[Filter] '
+    ## ℹ there are 818653 records in the 'nuccore' database for 'country = South Africa AND bacteria[Filter] '
 
 ``` r
 dsi_count(country = "country = South Africa AND archaea[Filter] ", db = "nuccore")
@@ -374,7 +380,7 @@ dsi_count(country = "country = South Africa AND archaea[Filter] ", db = "nuccore
 dsi_count(country = "country = South Africa AND viruses[Filter] ", db = "nuccore")
 ```
 
-    ## ℹ there are 75189 records in the 'nuccore' database for 'country = South Africa AND viruses[Filter] '
+    ## ℹ there are 76739 records in the 'nuccore' database for 'country = South Africa AND viruses[Filter] '
 
 We have now generated a range of country related searches and restricted
 them in various ways. If we are interested in monitoring activity over
